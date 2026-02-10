@@ -561,4 +561,4 @@ Related sessions: 5 matches found across projects
   - `README.md` - Complete documentation with usage examples
 - **Automatic maintenance**: Index updates automatically via `updateSingleFile()` after each save
 - **Robust fallback**: If index operations fail, system automatically falls back to filesystem scan, ensuring `/save` never blocks
-- **Dependencies**: Requires `js-yaml` package (install via `npm install` in commands directory)
+- **Dependencies**: Requires `js-yaml` package (install via `npm install` in memory-index directory)
