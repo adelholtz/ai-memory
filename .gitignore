@@ -1,4 +1,5 @@
 cleanup-sessions.md
+session-manager
 commit.md
 core_piv_loop
 create-prd.md
@@ -9,3 +10,4 @@ validation
 workspaces.md
 worktree.md
 memory-index/node_modules/
+.claude
