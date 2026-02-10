@@ -1,0 +1,21 @@
+{
+  "name": "agents-commands",
+  "version": "1.0.0",
+  "description": "Agent command utilities and memory management tools",
+  "main": "index.js",
+  "scripts": {
+    "build-index": "node build-index.js",
+    "update-index": "node update-index.js"
+  },
+  "keywords": [
+    "agents",
+    "memory",
+    "session-management",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
