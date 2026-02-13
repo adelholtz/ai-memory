@@ -1,6 +1,8 @@
 # AI Agent Stuff
 
-A knowledge management system for AI agent sessions with semantic search capabilities. This repository provides tools to capture, organize, and retrieve technical learnings from AI coding sessions.
+My personal take on agent memory and organizing knowlegde.
+
+For now this ia knowledge management system for AI agent sessions with semantic search capabilities. This repository provides tools to capture, organize, and retrieve technical learnings from AI coding sessions.
 
 ## Overview
 
@@ -13,20 +15,20 @@ Both commands leverage a high-performance memory index system that enables intel
 
 ## Key Features
 
-### 🧠 Intelligent Session Capture (`/save`)
+### Intelligent Session Capture (`/save`)
 - **Automatic analysis** - Extracts technical insights, patterns, and learnings from conversations
 - **Smart cross-referencing** - Links related sessions using tag overlap and semantic keyword matching
 - **Cross-project discovery** - Finds relevant work across ALL projects, not just current directory
 - **Structured templates** - Consistent documentation with frontmatter metadata
 - **Auto-tagging** - Automatically extracts relevant tags from session content
 
-### 🔍 Semantic Search (`/recall`)
+### Semantic Search (`/recall`)
 - **Natural language queries** - Search using plain language: "kubernetes debugging", "API authentication issues"
 - **Neural embeddings** - Finds semantically similar sessions using MiniLM-L6-v2 model
 - **Fast retrieval** - ~200-300ms search latency across 100+ sessions
 - **Offline operation** - Runs locally with no API keys or external dependencies
 
-### ⚡ High-Performance Index System
+###  High-Performance Index System
 - **91% faster** than filesystem scanning (~28ms vs 330ms)
 - **Scales efficiently** - Handles 100+ memory files in < 150ms
 - **Automatic maintenance** - Index updates incrementally with each save
