@@ -11,3 +11,4 @@ workspaces.md
 worktree.md
 memory-index/node_modules/
 .claude
+.worktrees/

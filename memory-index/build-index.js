@@ -80,15 +80,24 @@ function findMarkdownFiles(dir) {
 
 /**
  * Build complete memory index from all markdown files
- * @returns {object} Complete index structure
+ * @param {object} [options] - Build options
+ * @param {boolean} [options.embed=false] - Generate embeddings for descriptions
+ * @returns {Promise<object>} Complete index structure
  */
-function buildFullIndex() {
+async function buildFullIndex(options = {}) {
   const startTime = Date.now();
   const brainDir = path.join(os.homedir(), '.agents', 'brain');
 
   // Verify brain directory exists
   if (!fs.existsSync(brainDir)) {
     throw new Error(`Brain directory not found: ${brainDir}`);
+  }
+
+  let embedFn = null;
+  if (options.embed) {
+    const { loadModel, embed } = require('./embed.js');
+    await loadModel();
+    embedFn = embed;
   }
 
   const index = {
@@ -112,16 +121,27 @@ function buildFullIndex() {
       const basename = path.basename(dirname);
       const filename = path.basename(filepath);
 
-      index.entries[filepath] = {
+      const entry = {
         tags: frontmatter.tags,
         descriptionKeywords: keywords,
+        description: frontmatter.description,
         mtime: mtime,
         basename: basename,
         filename: filename
       };
+
+      // Generate embedding if requested
+      if (embedFn && frontmatter.description) {
+        try {
+          entry.embedding = await embedFn(frontmatter.description);
+        } catch (err) {
+          console.warn(`Warning: Failed to embed ${filename}: ${err.message}`);
+        }
+      }
+
+      index.entries[filepath] = entry;
     } catch (error) {
       console.warn(`Warning: Skipping ${filepath}:`, error.message);
-      // Continue processing other files
     }
   }
 
@@ -144,15 +164,26 @@ function saveIndex(index) {
 /**
  * Main CLI entry point
  */
-function main() {
+async function main() {
   try {
+    const args = process.argv.slice(2);
+    const doEmbed = args.includes('--embed');
+
     console.log('Building memory index...');
-    const index = buildFullIndex();
+    if (doEmbed) {
+      console.log('  Generating embeddings (this may take a moment)...');
+    }
+
+    const index = await buildFullIndex({ embed: doEmbed });
     saveIndex(index);
 
     console.log(`✓ Index built successfully!`);
     console.log(`  Total files indexed: ${index.stats.totalFiles}`);
     console.log(`  Scan duration: ${index.stats.lastScanDurationMs}ms`);
+    if (doEmbed) {
+      const withEmbeddings = Object.values(index.entries).filter(e => e.embedding).length;
+      console.log(`  Embeddings generated: ${withEmbeddings}`);
+    }
     console.log(`  Location: ~/.agents/brain/memory-index.json`);
 
     process.exit(0);

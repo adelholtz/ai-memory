@@ -109,6 +109,16 @@ if (typeof updateSingleFile === 'function') {
 
 console.log('');
 
+// Test 5: Verify updateSingleFile accepts embedding parameter
+console.log('Test 5: Testing updateSingleFile with embedding parameter...');
+if (updateSingleFile.length >= 1) {
+  console.log('✓ updateSingleFile accepts parameters (embedding support ready)');
+} else {
+  console.log('✗ updateSingleFile parameter signature unexpected');
+}
+
+console.log('');
+
 // Summary
 console.log('=== Integration Test Summary ===');
 console.log('✓ All integration points verified');

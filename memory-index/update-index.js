@@ -16,7 +16,7 @@ const { extractKeywords } = require('./extract-keywords.js');
  * @param {string} filepath - Absolute path to the markdown file
  * @returns {boolean} Success status
  */
-function updateSingleFile(filepath) {
+function updateSingleFile(filepath, options = {}) {
   const indexPath = path.join(os.homedir(), '.agents', 'brain', 'memory-index.json');
 
   // Load existing index or create new one
@@ -56,13 +56,21 @@ function updateSingleFile(filepath) {
     const filename = path.basename(filepath);
 
     // Add or update entry
-    index.entries[filepath] = {
+    const entry = {
       tags: frontmatter.tags,
       descriptionKeywords: keywords,
+      description: frontmatter.description,
       mtime: mtime,
       basename: basename,
       filename: filename
     };
+
+    // Store embedding if provided
+    if (options.embedding && Array.isArray(options.embedding)) {
+      entry.embedding = options.embedding;
+    }
+
+    index.entries[filepath] = entry;
 
     // Update stats
     index.stats.totalFiles = Object.keys(index.entries).length;

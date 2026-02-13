@@ -57,6 +57,32 @@ The index is stored at `~/.agents/brain/memory-index.json`:
    - CLI executable: `./update-index.js <filepath>`
    - Importable: `require('./update-index.js').updateSingleFile()`
 
+### Semantic Search (Embeddings)
+
+The index supports optional neural embeddings for semantic search via the `/recall` command.
+
+**Generating embeddings:**
+```bash
+# Backfill embeddings for all existing files
+./build-index.js --embed
+
+# Embeddings are also generated automatically by /save
+```
+
+**Searching:**
+```bash
+# CLI search
+node search.js "kubernetes debugging"
+
+# Or use the /recall slash command in Claude Code
+```
+
+**Components:**
+- `embed.js` - Embedding utility (model loading, embed(), cosineSimilarity())
+- `search.js` - Search logic (load index, rank by similarity, format output)
+
+**Model:** Xenova/all-MiniLM-L6-v2 (384 dimensions, ~30MB, cached in ~/.cache/huggingface/)
+
 ## Usage
 
 ### Initial Setup
@@ -256,15 +282,21 @@ Check that:
 ## Dependencies
 
 - **js-yaml** ^4.1.0 - YAML parser for frontmatter
+- **@huggingface/transformers** - Local sentence embeddings via MiniLM-L6-v2
 - **Node.js native modules** - fs, path, os
 
 ## Files
 
 ```
 memory-index/
-├── build-index.js           # Full index rebuild (executable)
+├── build-index.js           # Full index rebuild (executable, supports --embed)
 ├── update-index.js          # Incremental update (executable + importable)
 ├── extract-keywords.js      # Keyword extraction (importable)
+├── embed.js                 # Sentence embedding utility (importable)
+├── search.js                # Semantic search (executable + importable)
+├── test-embed.js            # Embedding tests
+├── test-search.js           # Search tests
+├── test-integration.js      # Integration tests
 └── README.md                # This file
 ```
 

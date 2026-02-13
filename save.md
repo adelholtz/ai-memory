@@ -320,7 +320,25 @@ Using the **template below**, populate all sections with the extracted informati
 
 Write the generated content to the target file and output a confirmation message.
 
-**After writing the file**: Call `updateSingleFile(targetPath)` from `memory-index/update-index.js` to add the new file to the index. Wrap in try-catch - index update failure should not block the save operation.
+**After writing the file**:
+
+1. **Generate embedding**: Use `embed()` from `memory-index/embed.js` to generate a 384-dim embedding for the session description. Wrap in try-catch — embedding failure should not block the save.
+
+2. **Update index**: Call `updateSingleFile(targetPath, { embedding })` from `memory-index/update-index.js` to add the new file (with embedding) to the index. Wrap in try-catch — index update failure should not block the save operation.
+
+```javascript
+// After writing the memory file
+try {
+  const { embed } = require('/Users/benjaminkrammel/.agents/commands/memory-index/embed.js');
+  const embedding = await embed(description);  // description from frontmatter
+
+  const { updateSingleFile } = require('/Users/benjaminkrammel/.agents/commands/memory-index/update-index.js');
+  updateSingleFile(targetPath, { embedding });
+} catch (error) {
+  console.warn('Failed to generate embedding or update index:', error.message);
+  // Continue without failing the save operation
+}
+```
 
 **Then output confirmation**:
 
@@ -480,6 +498,8 @@ Before saving the file, verify:
 - ✅ Related sessions matched correctly using tag overlap and keyword similarity
 - ✅ If index operations failed, fallback to filesystem scan worked correctly
 - ✅ Session discovery completed in < 100ms (or < 150ms for 50+ files)
+- ✅ Embedding was generated for the session description (or gracefully skipped)
+- ✅ Embedding was passed to `updateSingleFile()` via options parameter
 - ✅ Memory index utilities are available at `/Users/benjaminkrammel/.agents/commands/memory-index/`
 
 ## Edge Cases & Error Handling
