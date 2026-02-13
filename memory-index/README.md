@@ -26,9 +26,11 @@ The index is stored at `~/.agents/brain/memory-index.json`:
     "/Users/user/.agents/brain/my-project/memory-20260210.md": {
       "tags": ["kubernetes", "docker", "ci-cd"],
       "descriptionKeywords": ["debugging", "kubernetes", "pod", "restart", "loop"],
+      "description": "Debugging kubernetes pod restart loop in production",
       "mtime": 1707567896,
       "basename": "my-project",
-      "filename": "memory-20260210.md"
+      "filename": "memory-20260210.md",
+      "embedding": [0.123, -0.456, ...] // Optional: 384-dim vector, present if --embed was used
     }
   },
   "stats": {
@@ -48,14 +50,18 @@ The index is stored at `~/.agents/brain/memory-index.json`:
 2. **build-index.js** - Full index rebuild script
    - Recursively scans `~/.agents/brain`
    - Parses YAML frontmatter from all .md files
-   - Extracts metadata and builds complete index
-   - CLI executable: `./build-index.js`
+   - Extracts tags, description, and keywords
+   - Optionally generates embeddings with `--embed` flag
+   - Stores: tags, descriptionKeywords, description, mtime, basename, filename, (optional) embedding
+   - CLI executable: `./build-index.js` or `./build-index.js --embed`
 
 3. **update-index.js** - Incremental update utility
-   - Adds/updates a single file's metadata
+   - Adds/updates a single file's metadata in the index
+   - Stores the same fields as build-index.js
+   - Accepts optional embedding via options parameter
    - Used by `/save` command after saving each memory file
    - CLI executable: `./update-index.js <filepath>`
-   - Importable: `require('./update-index.js').updateSingleFile()`
+   - Importable: `require('./update-index.js').updateSingleFile(filepath, options)`
 
 ### Semantic Search (Embeddings)
 
@@ -78,8 +84,8 @@ node search.js "kubernetes debugging"
 ```
 
 **Components:**
-- `embed.js` - Embedding utility (model loading, embed(), cosineSimilarity())
-- `search.js` - Search logic (load index, rank by similarity, format output)
+- `embed.js` - Embedding utility (exports: loadModel(), embed(), cosineSimilarity())
+- `search.js` - Search logic (exports: searchMemories(), formatResults(); CLI: node search.js "query")
 
 **Model:** Xenova/all-MiniLM-L6-v2 (384 dimensions, ~30MB, cached in ~/.cache/huggingface/)
 
@@ -89,13 +95,13 @@ node search.js "kubernetes debugging"
 
 1. Install dependency:
    ```bash
-   cd /Users/benjaminkrammel/.agents/commands/memory-index
+   cd memory-index
    npm install
    ```
 
 2. Build the initial index:
    ```bash
-   cd /Users/benjaminkrammel/.agents/commands/memory-index
+   cd memory-index
    ./build-index.js
    ```
 
@@ -113,7 +119,7 @@ node search.js "kubernetes debugging"
 Rebuild the entire index from scratch:
 
 ```bash
-cd /Users/benjaminkrammel/.agents/commands/memory-index
+cd memory-index
 ./build-index.js
 ```
 
@@ -128,7 +134,7 @@ cd /Users/benjaminkrammel/.agents/commands/memory-index
 Update the index after modifying a memory file:
 
 ```bash
-cd /Users/benjaminkrammel/.agents/commands/memory-index
+cd memory-index
 ./update-index.js ~/.agents/brain/my-project/memory-20260210.md
 ```
 
@@ -143,8 +149,14 @@ Output:
 ```javascript
 const { updateSingleFile } = require('./memory-index/update-index.js');
 
-// After saving a memory file
+// After saving a memory file (without embedding)
 updateSingleFile('/Users/user/.agents/brain/my-project/memory-20260210.md');
+
+// Or with embedding (for semantic search support)
+const { embed } = require('./memory-index/embed.js');
+const description = 'Debugging kubernetes pod restart loop';
+const embedding = await embed(description);
+updateSingleFile('/Users/user/.agents/brain/my-project/memory-20260210.md', { embedding });
 ```
 
 ### Reading the Index
@@ -220,6 +232,10 @@ const { updateSingleFile } = require('./memory-index/update-index.js');
 
 try {
   updateSingleFile(memoryFilePath);
+  // Or with embedding for semantic search:
+  // const { embed } = require('./memory-index/embed.js');
+  // const embedding = await embed(frontmatter.description);
+  // updateSingleFile(memoryFilePath, { embedding });
 } catch (error) {
   console.warn('Failed to update index, continuing anyway:', error.message);
   // Continue without failing the save operation
@@ -282,7 +298,7 @@ Check that:
 ## Dependencies
 
 - **js-yaml** ^4.1.0 - YAML parser for frontmatter
-- **@huggingface/transformers** - Local sentence embeddings via MiniLM-L6-v2
+- **@huggingface/transformers** ^3.8.1 - Local sentence embeddings via MiniLM-L6-v2
 - **Node.js native modules** - fs, path, os
 
 ## Files
