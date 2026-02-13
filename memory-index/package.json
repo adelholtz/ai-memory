@@ -14,7 +14,7 @@
     "cli"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
     "js-yaml": "^4.1.0"
