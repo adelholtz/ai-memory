@@ -1,39 +1,34 @@
-# AI Agent Stuff
+# AI Agent Commands & Tools
 
-My personal take on agent memory and organizing knowlegde.
+Collection of  commands and utilities for AI agents including:
 
-For now this ia knowledge management system for AI agent sessions with semantic search capabilities. This repository provides tools to capture, organize, and retrieve technical learnings from AI coding sessions.
+* memory management
+* semantic searchs
 
 ## Overview
 
-This project implements two main commands for AI agents (like Claude Code, Copilot, etc.):
+This repository provides a comprehensive toolkit for enhancing AI agent workflows (Claude Code, Copilot, etc.) with persistent memory, semantic search, session management, and other things(wip).
 
-- **`/save`** - Captures session findings and learnings with automatic analysis and cross-referencing
-- **`/recall`** - Semantic search across all saved sessions using natural language queries
+## Core Systems
 
-Both commands leverage a high-performance memory index system that enables intelligent session discovery and cross-project knowledge retention.
+### Memory Index System
 
-## Key Features
+Intelligent knowledge management with semantic search capabilities.
 
-### Intelligent Session Capture (`/save`)
-- **Automatic analysis** - Extracts technical insights, patterns, and learnings from conversations
-- **Smart cross-referencing** - Links related sessions using tag overlap and semantic keyword matching
-- **Cross-project discovery** - Finds relevant work across ALL projects, not just current directory
-- **Structured templates** - Consistent documentation with frontmatter metadata
-- **Auto-tagging** - Automatically extracts relevant tags from session content
+**Commands:**
+- **`/save`** - Capture session learnings with automatic analysis and cross-referencing
+- **`/recall`** - Semantic search across all saved memories using natural language
 
-### Semantic Search (`/recall`)
-- **Natural language queries** - Search using plain language: "kubernetes debugging", "API authentication issues"
-- **Neural embeddings** - Finds semantically similar sessions using MiniLM-L6-v2 model
-- **Fast retrieval** - ~200-300ms search latency across 100+ sessions
-- **Offline operation** - Runs locally with no API keys or external dependencies
+**Key Features:**
+- Automatic session analysis and insight extraction
+- Neural embeddings for semantic similarity search
+- Cross-project knowledge discovery
+- 91% faster than filesystem scanning (~28ms vs 330ms)
+- Scales efficiently to 100+ memory files
 
-###  High-Performance Index System
-- **91% faster** than filesystem scanning (~28ms vs 330ms)
-- **Scales efficiently** - Handles 100+ memory files in < 150ms
-- **Automatic maintenance** - Index updates incrementally with each save
-- **Keyword extraction** - Smart algorithm filters stopwords, keeps technical terms
-- **Graceful fallback** - Falls back to filesystem scan if index unavailable
+### 📋 Other Commands
+
+WIP - Stay tuned for more tools to enhance your AI agent workflows
 
 ## Quick Start
 
@@ -41,89 +36,59 @@ Both commands leverage a high-performance memory index system that enables intel
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/adelholtz/ai-agent-stuff.git
-cd ai-agent-stuff
+git clone https://github.com/adelholtz/ai-agent-stuff.git ~/.agents/commands
+cd ~/.agents/commands
 ```
 
-2. Install dependencies for the memory-index system:
+2. Install memory-index dependencies:
 ```bash
 cd memory-index
 npm install
 ```
 
-3. Build the initial index (optional, created automatically on first `/save`):
-```bash
-./build-index.js
-```
-
-4. For semantic search, generate embeddings:
+3. (Optional) Generate embeddings for semantic search:
 ```bash
 ./build-index.js --embed
 ```
 
-### Usage
+The index will be generate at the first run of `/save` if not already created.
+After this, the system will automatically update the index with each new saved session.
 
-#### Saving Session Learnings
-
+4. Add symlinks for command accessibility:
 ```bash
-/save                                # Auto-generated timestamp filename
-/save my-findings                    # Custom filename (auto-appends .md)
-/save kubernetes-debug.md            # Specific filename with extension
-/save my-findings --tags k8s,debug   # Custom tags merged with auto-generated
+ln -s memory-index/commands/recall.md recall.md
+ln -s memory-index/commands/save.md save.md
 ```
 
-**What gets captured:**
-- Session metadata and context
-- Technical findings and discoveries
-- Code changes and architecture impacts
-- Tools, libraries, and configuration
-- Best practices and lessons learned
-- Outstanding items and future work
-- Related sessions via intelligent matching
+or
+```bash
+ln -s ~/.claude/commands/recall.md ~/.agents/memory-index/commands/recall.md
+ln -s ~/.claude/commands/save.md ~/.agents/memory-index/commands/save.md
+```
 
-**Output location:** `~/.agents/brain/<project-name>/memory-YYYYMMDD-HHMMSS.md`
+### Usage Examples
 
-#### Searching Past Sessions
+#### Memory System
 
 ```bash
+# Save session insights
+/save                                # Auto-generated filename
+/save my-findings                    # Custom filename
+/save debug-notes --tags k8s,debug   # With custom tags
+
+# Search past sessions
 /recall kubernetes network debugging
-/recall "how did I fix the authentication bug?"
-/recall helm chart configuration issues
+/recall "how did I fix the auth bug?"
 /recall docker container memory leak
 ```
 
-**Output:**
-```
-Searching 10 memories...
-
-1. [0.89] config-service/memory-20260212-134206.md
-   "Diagnosed and fixed a Kubernetes deployment caching issue..."
-   Tags: kubernetes, helm, docker, ci-cd
-
-2. [0.76] commands/memory-20260209-110856.md
-   "Performed systematic Kubernetes diagnostics..."
-   Tags: kubernetes, diagnostics, debugging
-
-Found 2 relevant memories (threshold: 0.3)
-```
-
-## Documentation
-
-### Command Specifications
-- **[save.md](./save.md)** - Complete `/save` command specification with 10-step implementation guide
-- **[recall.md](./recall.md)** - `/recall` semantic search command specification and usage
-
-### Memory Index System
-- **[memory-index/README.md](./memory-index/README.md)** - Index architecture, performance benchmarks, and maintenance guide
-
-### Design Documents
-- **[docs/plans/](./docs/plans/)** - Architecture decisions and implementation plans for semantic recall
-
 ## Architecture
+
+### Memory Index Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    AI Agent Session                         │
+│                    AI Agent Session                          │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
@@ -145,8 +110,7 @@ Found 2 relevant memories (threshold: 0.3)
                  ▼
         ┌────────────────┐
         │   Save File    │ ──────► ~/.agents/brain/<project>/memory-*.md
-        └────────────────┘         Structured markdown with frontmatter
-
+        └────────────────┘         Structured markdown
 
 ┌─────────────────────────────────────────────────────────────┐
 │                  Search for Past Work                        │
@@ -155,12 +119,6 @@ Found 2 relevant memories (threshold: 0.3)
                  ▼
         ┌────────────────┐
         │  /recall cmd   │ ──────► Natural language query
-        └────────┬───────┘
-                 │
-                 ▼
-        ┌────────────────┐
-        │  Load Index &  │ ──────► memory-index.json
-        │  Embeddings    │         All session vectors
         └────────┬───────┘
                  │
                  ▼
@@ -176,31 +134,43 @@ Found 2 relevant memories (threshold: 0.3)
         └────────────────┘
 ```
 
-## Performance
+## Performance Highlights
 
 | Operation | Time | Notes |
 |-----------|------|-------|
-| Session discovery (with index) | ~28ms | 91% faster than filesystem scan |
-| Session discovery (without index) | ~330ms | Filesystem scan fallback |
-| Large codebase (100+ files) | ~30ms | Index scales efficiently |
-| Embedding generation | ~170ms | Per session description |
+| Session discovery (indexed) | ~28ms | 91% faster than filesystem scan |
+| Session discovery (unindexed) | ~330ms | Fallback mode |
+| Large codebase (100+ files) | ~30ms | Scales efficiently |
 | Semantic search | ~200-300ms | Includes model load + search |
-| Index rebuild | < 100ms | Typical setup (< 20 files) |
+| Embedding generation | ~170ms | Per session description |
 
-## Components
+## Repository Structure
 
-### Memory Index Utilities (`memory-index/`)
-- **build-index.js** - Full index rebuild (supports `--embed` flag)
-- **update-index.js** - Incremental updates after each save
-- **extract-keywords.js** - Keyword extraction algorithm
-- **embed.js** - Sentence embedding utility (MiniLM-L6-v2)
-- **search.js** - Semantic search logic
-- **test-*.js** - Test suites for embeddings, search, and integration
+```
+.
+├── README.md                    # This file
+├── LICENSE
+├── create-prd.md                # PRD generation command
+├── recall.md                    # Symlink → memory-index/commands/recall.md
+├── save.md                      # Symlink → memory-index/commands/save.md
+│
+├── memory-index/                # Memory system implementation
+│   ├── README.md                # Full system documentation
+│   ├── commands/                # Command specifications
+│   │   ├── recall.md
+│   │   └── save.md
+│   ├── build-index.js           # Index builder
+│   ├── update-index.js          # Incremental updates
+│   ├── embed.js                 # Embedding utility
+│   ├── search.js                # Search logic
+│   └── extract-keywords.js      # Keyword extraction
+```
 
-### Dependencies
-- **js-yaml** - YAML frontmatter parsing
-- **@huggingface/transformers** - Local neural embeddings (MiniLM-L6-v2)
-- Node.js built-in modules (fs, path, os)
+## Documentation
+
+- **Memory Index System**: [memory-index/README.md](./memory-index/README.md)
+- **Command Specs**: [memory-index/commands/](./memory-index/commands/)
+- **Design Docs**: [memory-index/docs/](./memory-index/docs/)
 
 ## Contributing
 
@@ -208,4 +178,4 @@ This is a personal project for AI agent workflow optimization. Feel free to fork
 
 ## License
 
-MIT (or specify your license)
+MIT

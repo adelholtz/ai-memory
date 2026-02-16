@@ -1,4 +1,51 @@
-# Memory Index Management
+# Memory Index System
+
+Intelligent knowledge management for AI agents with semantic search and cross-project discovery capabilities.
+
+## Commands
+
+This system provides two main commands:
+
+### `/save` - Capture Session Learnings
+Automatically analyzes the current session and saves technical findings to `~/.agents/brain/<project>/memory-*.md`.
+
+**[→ Full Specification](./commands/save.md)**
+
+**Features:**
+- Automatic session analysis and insight extraction
+- Smart cross-referencing with related sessions
+- Cross-project discovery via tag overlap and semantic matching
+- Auto-tagging from session content
+- Structured markdown with frontmatter metadata
+
+**Usage:**
+```bash
+/save                                # Auto-generated filename
+/save my-findings                    # Custom filename
+/save debug-notes --tags k8s,debug   # With custom tags
+```
+
+### `/recall` - Semantic Search
+Search all saved memories using natural language queries with neural embeddings.
+
+**[→ Full Specification](./commands/recall.md)**
+
+**Features:**
+- Natural language queries
+- Neural embeddings (MiniLM-L6-v2 model)
+- Fast retrieval (~200-300ms)
+- Offline operation, no API keys needed
+
+**Usage:**
+```bash
+/recall kubernetes network debugging
+/recall "how did I fix the auth bug?"
+/recall docker container memory leak
+```
+
+---
+
+## Index System Architecture
 
 The memory index system provides fast metadata lookup for session discovery in the `/save` command. It pre-extracts tags and description keywords from all memory files in `~/.agents/brain`, enabling quick session discovery without scanning every markdown file on disk.
 
@@ -318,5 +365,7 @@ memory-index/
 
 ## See Also
 
-- `/save` command specification: `../save.md`
+- `/save` command specification: `./commands/save.md`
+- `/recall` command specification: `./commands/recall.md`
 - Session manager utilities: `../session-manager/`
+- Design documents: `./docs/`
