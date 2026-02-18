@@ -36,7 +36,7 @@ WIP - Stay tuned for more tools to enhance your AI agent workflows
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/adelholtz/ai-agent-stuff.git ~/.agents/commands
+git clone https://github.com/adelholtz/ai-memory.git ~/.agents/commands
 cd ~/.agents/commands
 ```
 
@@ -83,7 +83,7 @@ ln -s ~/.claude/commands/save.md ~/.agents/commands/save.md
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    AI Agent Session                          │
+│                    AI Agent Session                         │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
@@ -108,7 +108,7 @@ ln -s ~/.claude/commands/save.md ~/.agents/commands/save.md
         └────────────────┘         Structured markdown
 
 ┌─────────────────────────────────────────────────────────────┐
-│                  Search for Past Work                        │
+│                  Search for Past Work                       │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
