@@ -145,7 +145,6 @@ ln -s ~/.claude/commands/save.md ~/.agents/commands/save.md
 .
 ├── README.md                    # This file
 ├── LICENSE
-├── create-prd.md                # PRD generation command
 ├── recall.md                    # Symlink → memory-index/commands/recall.md
 ├── save.md                      # Symlink → memory-index/commands/save.md
 │
@@ -165,7 +164,6 @@ ln -s ~/.claude/commands/save.md ~/.agents/commands/save.md
 
 - **Memory Index System**: [memory-index/README.md](./memory-index/README.md)
 - **Command Specs**: [memory-index/commands/](./memory-index/commands/)
-- **Design Docs**: [memory-index/docs/](./memory-index/docs/)
 
 ## Contributing
 
